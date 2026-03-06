@@ -18,7 +18,12 @@ kind: Ingress
 metadata:
   name: argocd-server
   namespace: argocd
+  annotations:
+    # ArgoCD uses gRPC + HTTP on same port; Traefik needs h2c for this
+    traefik.ingress.kubernetes.io/router.tls: "false"
+    ingress.kubernetes.io/protocol: h2c
 spec:
+  ingressClassName: traefik
   rules:
     - host: argocd.homelab.internal
       http:
