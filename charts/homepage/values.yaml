@@ -127,7 +127,7 @@ config:
 
     - Infrastructure:
         - ArgoCD:
-            icon: argocd.png
+            icon: si-argo
             href: http://argocd.homelab.internal/
             description: GitOps Deployment
             siteMonitor: http://argocd-server.argocd.svc.cluster.local/healthz
