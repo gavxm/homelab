@@ -26,7 +26,7 @@ loki:
       type: filesystem
 
     compactor:
-      working_directory: /loki/compactor
+      working_directory: /var/loki/compactor
       compaction_interval: 10m
       retention_enabled: true
       retention_delete_delay: 2h
@@ -60,6 +60,29 @@ loki:
     enabled: false
   resultsCache:
     enabled: false
+
+  # Disable minio - we use local filesystem, not S3
+  minio:
+    enabled: false
+
+  # Disable canary (pushes test logs - not needed)
+  lokiCanary:
+    enabled: false
+
+  # Disable helm test
+  test:
+    enabled: false
+
+  # Disable self-monitoring (no Grafana Agent needed)
+  monitoring:
+    selfMonitoring:
+      enabled: false
+      grafanaAgent:
+        installOperator: false
+    lokiCanary:
+      enabled: false
+    serviceMonitor:
+      enabled: false
 
 # ---------- Promtail ----------
 promtail:

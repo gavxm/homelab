@@ -19,7 +19,7 @@ env:
   PGID: "1000"
   TZ: "America/Chicago"
   DEFAULT_WORKSPACE: "/config/workspace"
-  # Password set via secret — create manually:
+  # Password set via secret - create manually:
   #   kubectl create secret generic code-server-password \
   #     --from-literal=password=YOUR_PASSWORD -n code-server
 
