@@ -20,6 +20,12 @@ kube-prometheus-stack:
         domain: grafana.homelab.internal
       users:
         allow_sign_up: false
+      auth:
+        disable_login_form: false
+      auth.basic:
+        enabled: true
+      security:
+        allow_embedding: true
 
     # Datasources are auto-configured by kube-prometheus-stack (Prometheus)
     additionalDataSources:
