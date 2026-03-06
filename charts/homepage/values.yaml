@@ -131,26 +131,16 @@ config:
             href: http://argocd.homelab.internal/
             description: GitOps Deployment
             siteMonitor: http://argocd-server.argocd.svc.cluster.local/healthz
-        - cAdvisor:
-            icon: cadvisor.png
-            href: http://192.168.1.150:8181/
-            description: Container Metrics
-            siteMonitor: http://192.168.1.150:8181/healthz
         - Uptime Kuma:
             icon: uptime-kuma.png
             href: http://uptime-kuma.homelab.internal/
             description: Uptime Monitoring
             siteMonitor: http://uptime-kuma.uptime-kuma.svc.cluster.local:3001
-        - Portainer:
-            icon: portainer.png
-            href: http://192.168.1.150:9000/
-            description: Container Management
-            siteMonitor: http://192.168.1.150:9000
         - Code Server:
             icon: code-server.png
-            href: http://192.168.1.150:8443/
+            href: http://code.homelab.internal/
             description: VS Code in the Browser
-            siteMonitor: http://192.168.1.150:8443/healthz
+            siteMonitor: http://code-server.code-server.svc.cluster.local:8443/healthz
 
     - Networking:
         - Alertmanager Discord:
@@ -159,7 +149,7 @@ config:
             description: Discord Alert Bridge
         - Promtail:
             icon: loki.png
-            href: http://192.168.1.150:3333/explore
+            href: http://grafana.homelab.internal/explore
             description: Log Collector
 
   bookmarks.yaml: |
