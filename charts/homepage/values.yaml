@@ -31,7 +31,7 @@ serviceAccount:
   name: ""
 
 # ---------------------------------------------------------------------------
-# Homepage config files — all rendered into a single ConfigMap
+# Homepage config files - all rendered into a single ConfigMap
 # During transition: Docker services use direct IP+port (192.168.1.150)
 # As services migrate to k8s, update URLs to use cluster DNS
 # ---------------------------------------------------------------------------
@@ -96,32 +96,32 @@ config:
     - Monitoring:
         - Grafana:
             icon: grafana.png
-            href: http://192.168.1.150:3333/
+            href: http://grafana.homelab.internal/
             description: Dashboards & Visualization
-            siteMonitor: http://192.168.1.150:3333/api/health
+            siteMonitor: http://monitoring-grafana.monitoring.svc.cluster.local/api/health
             widget:
               type: grafana
-              url: http://192.168.1.150:3333
+              url: http://monitoring-grafana.monitoring.svc.cluster.local
               username: admin
               password: admin
               version: 2
               fields: ["dashboards", "alertstriggered"]
         - Prometheus:
             icon: prometheus.png
-            href: http://192.168.1.150:9191/
+            href: http://prometheus.homelab.internal/
             description: Metrics Collection & Storage
-            siteMonitor: http://192.168.1.150:9191/-/healthy
+            siteMonitor: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/-/healthy
             widget:
               type: prometheus
-              url: http://192.168.1.150:9191
+              url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
         - Alertmanager:
             icon: alertmanager.png
-            href: http://192.168.1.150:9393/
+            href: http://alertmanager.homelab.internal/
             description: Alert Routing & Notifications
-            siteMonitor: http://192.168.1.150:9393/-/healthy
+            siteMonitor: http://monitoring-kube-prometheus-alertmanager.monitoring.svc.cluster.local:9093/-/healthy
         - Loki:
             icon: loki.png
-            href: http://192.168.1.150:3333/explore
+            href: http://grafana.homelab.internal/explore
             description: Log Aggregation
             siteMonitor: http://192.168.1.150:3100/ready
 
@@ -173,7 +173,7 @@ config:
 
   custom.css: |
     /* ========================================
-       Space Aurora — Homelab Dashboard
+       Space Aurora - Homelab Dashboard
        Starfield + nebula blobs + glass cards
        ======================================== */
 
@@ -205,7 +205,7 @@ config:
       overflow: hidden;
     }
 
-    /* Nebula blobs — purple/blue/cyan */
+    /* Nebula blobs - purple/blue/cyan */
     body::before,
     body::after {
       content: '';
@@ -217,7 +217,7 @@ config:
       pointer-events: none;
     }
 
-    /* Purple nebula — top left */
+    /* Purple nebula - top left */
     body::before {
       width: 650px;
       height: 650px;
@@ -227,7 +227,7 @@ config:
       animation: nebula1 24s ease-in-out infinite;
     }
 
-    /* Cyan nebula — bottom right */
+    /* Cyan nebula - bottom right */
     body::after {
       width: 550px;
       height: 550px;
@@ -237,7 +237,7 @@ config:
       animation: nebula2 20s ease-in-out infinite;
     }
 
-    /* Deep violet nebula — center */
+    /* Deep violet nebula - center */
     #page_container::before {
       content: '';
       position: fixed;
@@ -262,7 +262,7 @@ config:
 
     /* ---- SPACING & LAYOUT ---- */
 
-    /* Top widget bar — breathing room */
+    /* Top widget bar - breathing room */
     #widgets-wrap {
       padding: 24px 0 16px 0 !important;
       margin-bottom: 8px !important;
@@ -273,7 +273,7 @@ config:
       margin-bottom: 28px !important;
     }
 
-    /* Section headers — more padding */
+    /* Section headers - more padding */
     .services-group > div:first-child {
       margin-bottom: 14px !important;
       padding-left: 4px !important;
@@ -320,7 +320,7 @@ config:
 
     /* ---- WIDGET CONTAINERS ---- */
 
-    /* System resources — glass card */
+    /* System resources - glass card */
     .information-widget-resources {
       backdrop-filter: blur(20px) saturate(170%) !important;
       -webkit-backdrop-filter: blur(20px) saturate(170%) !important;
@@ -330,7 +330,7 @@ config:
       padding: 4px 8px !important;
     }
 
-    /* Datetime — clean, no box */
+    /* Datetime - clean, no box */
     .information-widget-datetime {
       background: transparent !important;
       border: none !important;
@@ -341,12 +341,12 @@ config:
 
     /* ---- TEXT CONTRAST ---- */
 
-    /* Service titles — bright white */
+    /* Service titles - bright white */
     .service-title {
       color: rgba(255, 255, 255, 0.95) !important;
     }
 
-    /* Service descriptions — softer but readable */
+    /* Service descriptions - softer but readable */
     .service-description {
       color: rgba(200, 210, 230, 0.7) !important;
     }

@@ -1,0 +1,25 @@
+{{- if .Values.apps.monitoring.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: monitoring
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gavxm/homelab.git
+    targetRevision: main
+    path: {{ .Values.apps.monitoring.path }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.apps.monitoring.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - ServerSideApply=true
+{{- end }}

@@ -1,0 +1,282 @@
+# All values under this key configure the kube-prometheus-stack subchart
+kube-prometheus-stack:
+
+  # ---------- Grafana ----------
+  grafana:
+    adminUser: admin
+    # Set via: kubectl create secret generic grafana-admin -n monitoring --from-literal=password=YOUR_PASS
+    # Then reference it, or just set it here for now:
+    adminPassword: admin
+
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      hosts:
+        - grafana.homelab.internal
+
+    grafana.ini:
+      server:
+        root_url: http://grafana.homelab.internal
+        domain: grafana.homelab.internal
+      users:
+        allow_sign_up: false
+
+    # Datasources are auto-configured by kube-prometheus-stack (Prometheus)
+    # Add Loki when migrated:
+    # additionalDataSources:
+    #   - name: Loki
+    #     type: loki
+    #     url: http://loki.loki.svc.cluster.local:3100
+
+    resources:
+      limits:
+        memory: 256Mi
+      requests:
+        memory: 128Mi
+        cpu: 50m
+
+  # ---------- Prometheus ----------
+  prometheus:
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      hosts:
+        - prometheus.homelab.internal
+
+    prometheusSpec:
+      retention: 15d
+      retentionSize: 10GB
+
+      storageSpec:
+        volumeClaimTemplate:
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 15Gi
+
+      resources:
+        limits:
+          memory: 1Gi
+        requests:
+          memory: 512Mi
+          cpu: 100m
+
+  # ---------- Alertmanager ----------
+  alertmanager:
+    ingress:
+      enabled: true
+      ingressClassName: traefik
+      hosts:
+        - alertmanager.homelab.internal
+
+    alertmanagerSpec:
+      resources:
+        limits:
+          memory: 128Mi
+        requests:
+          memory: 64Mi
+          cpu: 10m
+
+    config:
+      global:
+        resolve_timeout: 5m
+      route:
+        receiver: discord-notifications
+        group_by: ['alertname', 'cluster', 'service']
+        group_wait: 10s
+        group_interval: 10s
+        repeat_interval: 12h
+        routes:
+          - matchers:
+              - severity="critical"
+            receiver: discord-notifications
+            group_wait: 0s
+            repeat_interval: 5m
+          - matchers:
+              - severity="warning"
+            receiver: discord-notifications
+            group_wait: 30s
+            repeat_interval: 1h
+      inhibit_rules:
+        - source_matchers:
+            - severity="critical"
+          target_matchers:
+            - severity="warning"
+          equal: ['alertname', 'instance']
+        - source_matchers:
+            - alertname=~"PrometheusDown|AlertmanagerDown|HostDown"
+          target_matchers:
+            - alertname="TargetDown"
+          equal: ['instance']
+      receivers:
+        - name: discord-notifications
+          webhook_configs:
+            - url: http://alertmanager-discord.monitoring.svc.cluster.local:9094
+              send_resolved: true
+        - name: 'null'
+
+  # ---------- Node Exporter ----------
+  nodeExporter:
+    enabled: true
+
+  prometheus-node-exporter:
+    resources:
+      limits:
+        memory: 128Mi
+      requests:
+        memory: 32Mi
+        cpu: 10m
+
+  # ---------- kube-state-metrics ----------
+  kube-state-metrics:
+    resources:
+      limits:
+        memory: 128Mi
+      requests:
+        memory: 64Mi
+        cpu: 10m
+
+  # ---------- Disable components not needed on single-node ----------
+  kubeProxy:
+    enabled: false
+  kubeEtcd:
+    enabled: false
+
+  # ---------- Custom Alert Rules (ported from Docker setup) ----------
+  additionalPrometheusRulesMap:
+    homelab-host-alerts:
+      groups:
+        - name: homelab_host_alerts
+          interval: 30s
+          rules:
+            - alert: HostDown
+              expr: up{job="node"} == 0
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Host {{ $labels.instance }} is down"
+                description: "Node exporter on {{ $labels.instance }} has been down for more than 1 minute."
+
+            - alert: HighCPUUsage
+              expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High CPU usage on {{ $labels.instance }}"
+                description: "CPU usage is above 80% (current value: {{ $value | humanize }}%)"
+
+            - alert: CriticalCPUUsage
+              expr: 100 - (avg by(instance) (irate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 95
+              for: 2m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Critical CPU usage on {{ $labels.instance }}"
+                description: "CPU usage is above 95% (current value: {{ $value | humanize }}%)"
+
+            - alert: HighMemoryUsage
+              expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 80
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High memory usage on {{ $labels.instance }}"
+                description: "Memory usage is above 80% (current value: {{ $value | humanize }}%)"
+
+            - alert: CriticalMemoryUsage
+              expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) * 100 > 95
+              for: 2m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Critical memory usage on {{ $labels.instance }}"
+                description: "Memory usage is above 95% (current value: {{ $value | humanize }}%)"
+
+            - alert: DiskSpaceLow
+              expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) * 100 < 20
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Disk space low on {{ $labels.instance }}"
+                description: "Disk space on {{ $labels.mountpoint }} is below 20% (current: {{ $value | humanize }}% free)"
+
+            - alert: DiskSpaceCritical
+              expr: (node_filesystem_avail_bytes{mountpoint="/",fstype!="rootfs"} / node_filesystem_size_bytes{mountpoint="/",fstype!="rootfs"}) * 100 < 10
+              for: 2m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Critical disk space on {{ $labels.instance }}"
+                description: "Disk space on {{ $labels.mountpoint }} is below 10% (current: {{ $value | humanize }}% free)"
+
+            - alert: HighDiskIO
+              expr: rate(node_disk_io_time_seconds_total[5m]) > 0.8
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High disk I/O on {{ $labels.instance }}"
+                description: "Disk I/O is high on device {{ $labels.device }} (current value: {{ $value | humanize }})"
+
+            - alert: HighNetworkErrors
+              expr: rate(node_network_receive_errs_total{device!~"lo|veth.*|docker.*|br-.*"}[5m]) + rate(node_network_transmit_errs_total{device!~"lo|veth.*|docker.*|br-.*"}[5m]) > 10
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "High network errors on {{ $labels.instance }}"
+                description: "Network interface {{ $labels.device }} has error rate > 10/s (current: {{ $value | humanize }}/s)"
+
+    homelab-service-alerts:
+      groups:
+        - name: homelab_service_alerts
+          interval: 30s
+          rules:
+            - alert: TargetDown
+              expr: up == 0
+              for: 2m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Target {{ $labels.job }}/{{ $labels.instance }} is down"
+                description: "Scrape target {{ $labels.instance }} (job: {{ $labels.job }}) has been down for more than 2 minutes."
+
+            - alert: PrometheusDown
+              expr: up{job="prometheus"} == 0
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Prometheus is down"
+                description: "Prometheus has been down for more than 1 minute."
+
+            - alert: AlertmanagerDown
+              expr: up{job="alertmanager"} == 0
+              for: 1m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Alertmanager is down"
+                description: "Alertmanager has been down for more than 1 minute - alerts will not be sent."
+
+            - alert: PrometheusTooManyFailedScrapes
+              expr: increase(prometheus_target_scrapes_exceeded_sample_limit_total[5m]) > 0
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Prometheus has too many failed scrapes"
+                description: "Prometheus is experiencing scrape failures on {{ $labels.job }}"
+
+            - alert: PrometheusTSDBCompactionsFailing
+              expr: increase(prometheus_tsdb_compactions_failed_total[5m]) > 0
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Prometheus TSDB compactions are failing"
+                description: "Prometheus TSDB compactions have failed - this may lead to increased storage usage."

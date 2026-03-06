@@ -1,0 +1,61 @@
+# alertmanager-discord bridge - forwards Alertmanager webhooks to Discord
+# Requires a Secret named "discord-webhook" with key "url" in the monitoring namespace
+# Create it manually:
+#   kubectl create secret generic discord-webhook \
+#     --from-literal=url=https://discord.com/api/webhooks/YOUR_WEBHOOK \
+#     -n monitoring
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: alertmanager-discord
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: alertmanager-discord
+    app.kubernetes.io/instance: {{ .Release.Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alertmanager-discord
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: alertmanager-discord
+    spec:
+      containers:
+        - name: alertmanager-discord
+          image: benjojo/alertmanager-discord:latest
+          ports:
+            - name: http
+              containerPort: 9094
+              protocol: TCP
+          env:
+            - name: DISCORD_WEBHOOK
+              valueFrom:
+                secretKeyRef:
+                  name: discord-webhook
+                  key: url
+          resources:
+            limits:
+              memory: 64Mi
+            requests:
+              memory: 32Mi
+              cpu: 10m
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: alertmanager-discord
+  namespace: {{ .Release.Namespace }}
+  labels:
+    app.kubernetes.io/name: alertmanager-discord
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9094
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: alertmanager-discord

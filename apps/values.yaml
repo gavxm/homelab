@@ -7,3 +7,7 @@ apps:
     enabled: true
     namespace: uptime-kuma
     path: charts/uptime-kuma
+  monitoring:
+    enabled: true
+    namespace: monitoring
+    path: charts/monitoring
