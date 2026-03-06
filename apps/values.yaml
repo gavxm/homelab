@@ -1,0 +1,5 @@
+apps:
+  homepage:
+    enabled: true
+    namespace: homepage
+    path: charts/homepage
