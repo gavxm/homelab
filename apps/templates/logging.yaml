@@ -1,0 +1,24 @@
+{{- if .Values.apps.logging.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: logging
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gavxm/homelab.git
+    targetRevision: main
+    path: {{ .Values.apps.logging.path }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.apps.logging.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}

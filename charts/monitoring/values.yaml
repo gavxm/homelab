@@ -22,11 +22,10 @@ kube-prometheus-stack:
         allow_sign_up: false
 
     # Datasources are auto-configured by kube-prometheus-stack (Prometheus)
-    # Add Loki when migrated:
-    # additionalDataSources:
-    #   - name: Loki
-    #     type: loki
-    #     url: http://loki.loki.svc.cluster.local:3100
+    additionalDataSources:
+      - name: Loki
+        type: loki
+        url: http://logging-loki.logging.svc.cluster.local:3100
 
     resources:
       limits:

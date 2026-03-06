@@ -123,7 +123,7 @@ config:
             icon: loki.png
             href: http://grafana.homelab.internal/explore
             description: Log Aggregation
-            siteMonitor: http://192.168.1.150:3100/ready
+            siteMonitor: http://logging-loki.logging.svc.cluster.local:3100/ready
 
     - Infrastructure:
         - ArgoCD:

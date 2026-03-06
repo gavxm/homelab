@@ -11,3 +11,7 @@ apps:
     enabled: true
     namespace: monitoring
     path: charts/monitoring
+  logging:
+    enabled: true
+    namespace: logging
+    path: charts/logging
