@@ -25,6 +25,11 @@ loki:
     storage:
       type: filesystem
 
+    # Fix memberlist service name
+    memberlistConfig:
+      join_members:
+        - logging-loki-memberlist
+
     compactor:
       working_directory: /var/loki/compactor
       compaction_interval: 10m
