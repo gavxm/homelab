@@ -15,3 +15,7 @@ apps:
     enabled: true
     namespace: logging
     path: charts/logging
+  code-server:
+    enabled: true
+    namespace: code-server
+    path: charts/code-server

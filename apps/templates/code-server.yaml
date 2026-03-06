@@ -1,0 +1,24 @@
+{{- if index .Values.apps "code-server" "enabled" }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: code-server
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gavxm/homelab.git
+    targetRevision: main
+    path: {{ index .Values.apps "code-server" "path" }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ index .Values.apps "code-server" "namespace" }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}

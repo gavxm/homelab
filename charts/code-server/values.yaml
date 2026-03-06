@@ -1,0 +1,36 @@
+image:
+  repository: lscr.io/linuxserver/code-server
+  tag: latest
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 8443
+
+ingress:
+  enabled: true
+  host: code.homelab.internal
+
+env:
+  PUID: "1000"
+  PGID: "1000"
+  TZ: "America/Chicago"
+  DEFAULT_WORKSPACE: "/config/workspace"
+  # Password set via secret — create manually:
+  #   kubectl create secret generic code-server-password \
+  #     --from-literal=password=YOUR_PASSWORD -n code-server
+
+persistence:
+  enabled: true
+  size: 5Gi
+  storageClass: ""
+
+resources:
+  limits:
+    memory: 512Mi
+  requests:
+    memory: 256Mi
+    cpu: 50m
