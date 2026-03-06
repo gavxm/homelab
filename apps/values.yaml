@@ -3,3 +3,7 @@ apps:
     enabled: true
     namespace: homepage
     path: charts/homepage
+  uptime-kuma:
+    enabled: true
+    namespace: uptime-kuma
+    path: charts/uptime-kuma

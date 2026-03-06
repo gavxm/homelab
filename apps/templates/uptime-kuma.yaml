@@ -1,0 +1,24 @@
+{{- if index .Values.apps "uptime-kuma" "enabled" }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: uptime-kuma
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gavxm/homelab.git
+    targetRevision: main
+    path: {{ index .Values.apps "uptime-kuma" "path" }}
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ index .Values.apps "uptime-kuma" "namespace" }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}
