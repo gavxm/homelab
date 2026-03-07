@@ -1,4 +1,8 @@
 apps:
+  argocd:
+    enabled: true
+    namespace: argocd
+    path: charts/argocd
   homepage:
     enabled: true
     namespace: homepage

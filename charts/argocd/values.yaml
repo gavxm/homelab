@@ -1,0 +1,73 @@
+argo-cd:
+  # Keep ArgoCD accessible via the same settings
+  configs:
+    cm:
+      helm.valuesFileSchemes: "secrets, https, http"
+    params:
+      server.insecure: true
+      server.cookie.secure: false
+
+  repoServer:
+    # Init container: install sops, age, helm-secrets
+    initContainers:
+      - name: install-helm-secrets
+        image: alpine:3.19
+        command: ["/bin/sh", "-c"]
+        args:
+          - |
+            set -e
+            apk add --no-cache curl
+
+            # Install sops
+            curl -fsSL -o /sops-bin/sops \
+              https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64
+            chmod +x /sops-bin/sops
+
+            # Install age
+            curl -fsSL https://github.com/FiloSottile/age/releases/download/v1.2.0/age-v1.2.0-linux-amd64.tar.gz \
+              | tar xz -C /tmp
+            cp /tmp/age/age /sops-bin/age
+            chmod +x /sops-bin/age
+
+            # Install helm-secrets plugin
+            curl -fsSL https://github.com/jkroepke/helm-secrets/releases/download/v4.6.2/helm-secrets.tar.gz \
+              | tar xz -C /helm-plugins
+
+            # Remove platformCommand to suppress Helm warning that breaks manifest parsing
+            sed -i '/^platformCommand:/,/^[a-z]/{ /^platformCommand:/d; /^[a-z]/!d; }' /helm-plugins/helm-secrets/plugin.yaml
+        volumeMounts:
+          - name: sops-bin
+            mountPath: /sops-bin
+          - name: helm-plugins
+            mountPath: /helm-plugins
+
+    # Extra env vars for the repo-server container
+    env:
+      - name: HELM_PLUGINS
+        value: /helm-plugins
+      - name: SOPS_AGE_KEY_FILE
+        value: /sops-age/keys.txt
+
+    # Extra volumes
+    volumes:
+      - name: sops-age
+        secret:
+          secretName: argocd-age-key
+      - name: helm-plugins
+        emptyDir: {}
+      - name: sops-bin
+        emptyDir: {}
+
+    # Extra volume mounts for the repo-server container
+    volumeMounts:
+      - name: sops-age
+        mountPath: /sops-age
+        readOnly: true
+      - name: helm-plugins
+        mountPath: /helm-plugins
+      - name: sops-bin
+        mountPath: /usr/local/sbin/sops
+        subPath: sops
+      - name: sops-bin
+        mountPath: /usr/local/sbin/age
+        subPath: age
