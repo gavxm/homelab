@@ -17,6 +17,12 @@ ingress:
 env:
   HOMEPAGE_ALLOWED_HOSTS: "homelab.internal,localhost"
 
+# Secrets injected as env vars — referenced in services.yaml as {{HOMEPAGE_VAR_NAME}}
+envFromSecrets:
+  - envName: HOMEPAGE_VAR_GRAFANA_PASSWORD
+    secretName: homepage-secrets
+    secretKey: grafana-password
+
 resources:
   limits:
     memory: 256Mi
@@ -103,7 +109,7 @@ config:
               type: grafana
               url: http://monitoring-grafana.monitoring.svc.cluster.local
               username: admin
-              password: admin
+              password: "{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}"
               version: 2
               fields: ["dashboards", "alertstriggered"]
         - Prometheus:
