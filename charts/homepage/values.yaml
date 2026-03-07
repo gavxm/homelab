@@ -20,9 +20,12 @@ env:
 # Secrets injected as env vars F managed via encrypted secrets.yaml (SOPS + age)
 # Referenced in services.yaml as {{HOMEPAGE_VAR_NAME}}
 envFromSecrets:
-  - envName: HOMEPAGE_VAR_GRAFANA_API_KEY
+  - envName: HOMEPAGE_VAR_GRAFANA_USER
     secretName: homepage-secrets
-    secretKey: grafana-api-key
+    secretKey: grafana-user
+  - envName: HOMEPAGE_VAR_GRAFANA_PASSWORD
+    secretName: homepage-secrets
+    secretKey: grafana-password
 
 resources:
   limits:
@@ -109,7 +112,8 @@ config:
             widget:
               type: grafana
               url: http://monitoring-grafana.monitoring.svc.cluster.local
-              key: "{{HOMEPAGE_VAR_GRAFANA_API_KEY}}"
+              username: "{{HOMEPAGE_VAR_GRAFANA_USER}}"
+              password: "{{HOMEPAGE_VAR_GRAFANA_PASSWORD}}"
               fields: ["dashboards", "alertstriggered"]
         - Prometheus:
             icon: prometheus.png
