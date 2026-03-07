@@ -1,0 +1,67 @@
+---
+# Strategic merge patch for ArgoCD repo-server
+# Adds helm-secrets, sops, and age support
+#
+# Apply with:
+#   kubectl patch deployment argocd-repo-server -n argocd \
+#     --type strategic --patch-file bootstrap/argocd-repo-server-patch.yaml
+#
+spec:
+  template:
+    spec:
+      volumes:
+        - name: sops-age
+          secret:
+            secretName: argocd-age-key
+        - name: helm-plugins
+          emptyDir: {}
+        - name: sops-bin
+          emptyDir: {}
+      initContainers:
+        - name: install-helm-secrets
+          image: alpine:3.19
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              set -e
+              apk add --no-cache curl bash git
+
+              # Install sops
+              curl -fsSL -o /sops-bin/sops \
+                https://github.com/getsops/sops/releases/download/v3.9.4/sops-v3.9.4.linux.amd64
+              chmod +x /sops-bin/sops
+
+              # Install age
+              curl -fsSL https://github.com/FiloSottile/age/releases/download/v1.2.0/age-v1.2.0-linux-amd64.tar.gz \
+                | tar xz -C /tmp
+              cp /tmp/age/age /sops-bin/age
+              chmod +x /sops-bin/age
+
+              # Install helm-secrets plugin
+              export HELM_PLUGINS=/helm-plugins
+              export PATH="/sops-bin:$PATH"
+              helm plugin install https://github.com/jkroepke/helm-secrets --version v4.6.2
+          volumeMounts:
+            - name: sops-bin
+              mountPath: /sops-bin
+            - name: helm-plugins
+              mountPath: /helm-plugins
+      containers:
+        - name: argocd-repo-server
+          env:
+            - name: HELM_PLUGINS
+              value: /helm-plugins
+            - name: SOPS_AGE_KEY_FILE
+              value: /sops-age/keys.txt
+          volumeMounts:
+            - name: sops-age
+              mountPath: /sops-age
+              readOnly: true
+            - name: helm-plugins
+              mountPath: /helm-plugins
+            - name: sops-bin
+              mountPath: /usr/local/sbin/sops
+              subPath: sops
+            - name: sops-bin
+              mountPath: /usr/local/sbin/age
+              subPath: age
