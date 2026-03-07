@@ -24,7 +24,7 @@ spec:
           args:
             - |
               set -e
-              apk add --no-cache curl bash git
+              apk add --no-cache curl
 
               # Install sops
               curl -fsSL -o /sops-bin/sops \
@@ -37,10 +37,10 @@ spec:
               cp /tmp/age/age /sops-bin/age
               chmod +x /sops-bin/age
 
-              # Install helm-secrets plugin
-              export HELM_PLUGINS=/helm-plugins
-              export PATH="/sops-bin:$PATH"
-              helm plugin install https://github.com/jkroepke/helm-secrets --version v4.6.2
+              # Install helm-secrets plugin (direct download, no helm needed)
+              mkdir -p /helm-plugins/helm-secrets
+              curl -fsSL https://github.com/jkroepke/helm-secrets/releases/download/v4.6.2/helm-secrets.tar.gz \
+                | tar xz -C /helm-plugins/helm-secrets
           volumeMounts:
             - name: sops-bin
               mountPath: /sops-bin
