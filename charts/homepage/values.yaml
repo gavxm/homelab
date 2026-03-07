@@ -15,7 +15,7 @@ ingress:
   host: homelab.internal
 
 env:
-  HOMEPAGE_ALLOWED_HOSTS: "homelab.internal,localhost"
+  HOMEPAGE_ALLOWED_HOSTS: "homelab.internal,home.gavxm.com,localhost"
 
 # Secrets injected as env vars F managed via encrypted secrets.yaml (SOPS + age)
 # Referenced in services.yaml as {{HOMEPAGE_VAR_NAME}}
