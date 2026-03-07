@@ -1,0 +1,28 @@
+{{- if .Values.apps.cloudflared.enabled }}
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: cloudflared
+  namespace: argocd
+  finalizers:
+    - resources-finalizer.argocd.argoproj.io
+spec:
+  project: default
+  source:
+    repoURL: https://github.com/gavxm/homelab.git
+    targetRevision: main
+    path: {{ .Values.apps.cloudflared.path }}
+    helm:
+      valueFiles:
+        - values.yaml
+        - secrets://secrets.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: {{ .Values.apps.cloudflared.namespace }}
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+{{- end }}

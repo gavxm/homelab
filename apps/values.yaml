@@ -23,3 +23,7 @@ apps:
     enabled: true
     namespace: code-server
     path: charts/code-server
+  cloudflared:
+    enabled: true
+    namespace: cloudflared
+    path: charts/cloudflared
