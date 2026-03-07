@@ -6,8 +6,14 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "code-server.labels" . | nindent 4 }}
+  annotations:
+    cert-manager.io/cluster-issuer: homelab-ca-issuer
 spec:
   ingressClassName: traefik
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ include "code-server.fullname" . }}-tls
   rules:
     - host: {{ .Values.ingress.host }}
       http:

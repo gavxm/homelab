@@ -27,3 +27,7 @@ apps:
     enabled: true
     namespace: cloudflared
     path: charts/cloudflared
+  certManager:
+    enabled: true
+    namespace: cert-manager
+    path: charts/cert-manager

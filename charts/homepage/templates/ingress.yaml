@@ -6,7 +6,13 @@ metadata:
   namespace: {{ .Release.Namespace }}
   labels:
     {{- include "homepage.labels" . | nindent 4 }}
+  annotations:
+    cert-manager.io/cluster-issuer: homelab-ca-issuer
 spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: {{ include "homepage.fullname" . }}-tls
   rules:
     - host: {{ .Values.ingress.host }}
       http:
