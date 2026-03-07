@@ -40,6 +40,9 @@ spec:
               # Install helm-secrets plugin (direct download, no helm needed)
               curl -fsSL https://github.com/jkroepke/helm-secrets/releases/download/v4.6.2/helm-secrets.tar.gz \
                 | tar xz -C /helm-plugins
+
+              # Remove platformCommand to suppress Helm warning that breaks ArgoCD manifest parsing
+              sed -i '/^platformCommand:/,/^[a-z]/{ /^platformCommand:/d; /^[a-z]/!d; }' /helm-plugins/helm-secrets/plugin.yaml
           volumeMounts:
             - name: sops-bin
               mountPath: /sops-bin
