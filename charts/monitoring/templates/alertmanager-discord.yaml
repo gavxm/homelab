@@ -1,9 +1,5 @@
 # alertmanager-discord bridge - forwards Alertmanager webhooks to Discord
-# Requires a Secret named "discord-webhook" with key "url" in the monitoring namespace
-# Create it manually:
-#   kubectl create secret generic discord-webhook \
-#     --from-literal=url=https://discord.com/api/webhooks/YOUR_WEBHOOK \
-#     -n monitoring
+# Secret "discord-webhook" is managed via encrypted secrets.yaml (SOPS + age)
 ---
 apiVersion: apps/v1
 kind: Deployment

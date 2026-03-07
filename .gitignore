@@ -13,3 +13,6 @@ charts/*/charts/
 # Secrets (unsealed)
 *-secret.yaml
 !*-sealed-secret.yaml
+
+# Age private key (never commit)
+keys.txt

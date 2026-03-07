@@ -17,7 +17,8 @@ ingress:
 env:
   HOMEPAGE_ALLOWED_HOSTS: "homelab.internal,localhost"
 
-# Secrets injected as env vars — referenced in services.yaml as {{HOMEPAGE_VAR_NAME}}
+# Secrets injected as env vars F managed via encrypted secrets.yaml (SOPS + age)
+# Referenced in services.yaml as {{HOMEPAGE_VAR_NAME}}
 envFromSecrets:
   - envName: HOMEPAGE_VAR_GRAFANA_API_KEY
     secretName: homepage-secrets

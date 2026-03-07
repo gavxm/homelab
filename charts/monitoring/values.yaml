@@ -4,9 +4,7 @@ kube-prometheus-stack:
   # ---------- Grafana ----------
   grafana:
     adminUser: admin
-    # Set via: kubectl create secret generic grafana-admin -n monitoring --from-literal=password=YOUR_PASS
-    # Then reference it, or just set it here for now:
-    adminPassword: admin
+    # adminPassword is set via encrypted secrets.yaml (SOPS + age)
 
     ingress:
       enabled: true
@@ -49,7 +47,7 @@ kube-prometheus-stack:
 
     dashboards:
       community:
-        # Node Exporter Full — detailed host metrics (CPU, RAM, disk, network)
+        # Node Exporter Full - detailed host metrics (CPU, RAM, disk, network)
         node-exporter-full:
           gnetId: 1860
           revision: 37

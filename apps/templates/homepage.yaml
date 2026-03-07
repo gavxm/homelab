@@ -12,6 +12,10 @@ spec:
     repoURL: https://github.com/gavxm/homelab.git
     targetRevision: main
     path: {{ .Values.apps.homepage.path }}
+    helm:
+      valueFiles:
+        - values.yaml
+        - secrets://secrets.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: {{ .Values.apps.homepage.namespace }}
