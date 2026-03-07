@@ -38,9 +38,8 @@ spec:
               chmod +x /sops-bin/age
 
               # Install helm-secrets plugin (direct download, no helm needed)
-              mkdir -p /helm-plugins/helm-secrets
               curl -fsSL https://github.com/jkroepke/helm-secrets/releases/download/v4.6.2/helm-secrets.tar.gz \
-                | tar xz -C /helm-plugins/helm-secrets
+                | tar xz -C /helm-plugins
           volumeMounts:
             - name: sops-bin
               mountPath: /sops-bin
