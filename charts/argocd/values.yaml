@@ -7,6 +7,10 @@ argo-cd:
       server.insecure: true
       server.cookie.secure: false
 
+  # Skip redis-secret-init job (existing secret already provisioned)
+  redisSecretInit:
+    enabled: false
+
   repoServer:
     # Init container: install sops, age, helm-secrets
     initContainers:
