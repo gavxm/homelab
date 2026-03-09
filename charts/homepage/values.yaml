@@ -106,7 +106,7 @@ config:
     - Monitoring:
         - Grafana:
             icon: grafana.png
-            href: http://grafana.homelab.internal/
+            href: https://grafana.homelab.internal/
             description: Dashboards & Visualization
             siteMonitor: http://monitoring-grafana.monitoring.svc.cluster.local/api/health
             widget:
@@ -117,7 +117,7 @@ config:
               fields: ["dashboards", "alertstriggered"]
         - Prometheus:
             icon: prometheus.png
-            href: http://prometheus.homelab.internal/
+            href: https://prometheus.homelab.internal/
             description: Metrics Collection & Storage
             siteMonitor: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090/-/healthy
             widget:
@@ -125,40 +125,45 @@ config:
               url: http://monitoring-kube-prometheus-prometheus.monitoring.svc.cluster.local:9090
         - Alertmanager:
             icon: alertmanager.png
-            href: http://alertmanager.homelab.internal/
+            href: https://alertmanager.homelab.internal/
             description: Alert Routing & Notifications
             siteMonitor: http://monitoring-kube-prometheus-alertmanager.monitoring.svc.cluster.local:9093/-/healthy
         - Loki:
             icon: loki.png
-            href: http://grafana.homelab.internal/explore
+            href: https://grafana.homelab.internal/explore
             description: Log Aggregation
             siteMonitor: http://logging-loki.logging.svc.cluster.local:3100/ready
 
     - Infrastructure:
         - ArgoCD:
             icon: si-argo
-            href: http://argocd.homelab.internal/
+            href: https://argocd.homelab.internal/
             description: GitOps Deployment
             siteMonitor: http://argocd-server.argocd.svc.cluster.local/healthz
         - Uptime Kuma:
             icon: uptime-kuma.png
-            href: http://uptime-kuma.homelab.internal/
+            href: https://uptime-kuma.homelab.internal/
             description: Uptime Monitoring
             siteMonitor: http://uptime-kuma.uptime-kuma.svc.cluster.local:3001
         - Code Server:
             icon: code-server.png
-            href: http://code.homelab.internal/
+            href: https://code.homelab.internal/
             description: VS Code in the Browser
             siteMonitor: http://code-server.code-server.svc.cluster.local:8443/healthz
 
     - Networking:
+        - AdGuard Home:
+            icon: adguard-home.png
+            href: https://adguard.homelab.internal/
+            description: DNS & Ad Blocking
+            siteMonitor: http://adguard-home.adguard-home.svc.cluster.local:3000
         - Alertmanager Discord:
             icon: discord.png
             href: "#"
             description: Discord Alert Bridge
         - Promtail:
             icon: loki.png
-            href: http://grafana.homelab.internal/explore
+            href: https://grafana.homelab.internal/explore
             description: Log Collector
 
   bookmarks.yaml: |

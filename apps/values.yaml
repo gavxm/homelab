@@ -31,3 +31,7 @@ apps:
     enabled: true
     namespace: cert-manager
     path: charts/cert-manager
+  adguardHome:
+    enabled: true
+    namespace: adguard-home
+    path: charts/adguard-home

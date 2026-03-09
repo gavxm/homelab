@@ -1,0 +1,6 @@
+apiVersion: v2
+name: adguard-home
+description: AdGuard Home - DNS server with ad blocking
+type: application
+version: 0.1.0
+appVersion: "0.107.55"

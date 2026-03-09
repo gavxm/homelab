@@ -1,0 +1,31 @@
+image:
+  repository: adguard/adguardhome
+  tag: v0.107.55
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+# bcrypt hash of admin password — generate with:
+#   htpasswd -nbB admin 'yourpassword' | cut -d: -f2
+adminPasswordHash: "$2y$05$fDSNp8aXq..ELjz5Rn8KPuOBBcIlu2Ko9iUMkmw9arwNLYiCeDD0G"
+
+ingress:
+  enabled: true
+  host: adguard.homelab.internal
+
+persistence:
+  config:
+    size: 256Mi
+  data:
+    size: 1Gi
+
+dns:
+  nodePort: 30053
+
+resources:
+  limits:
+    memory: 256Mi
+  requests:
+    memory: 128Mi
+    cpu: 50m
