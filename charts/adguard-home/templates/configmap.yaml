@@ -49,12 +49,6 @@ data:
         - 10.0.0.0/8
         - 172.16.0.0/12
         - 192.168.0.0/16
-    filtering:
-      enabled: true
-      url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
-      filtering_enabled: true
-      parental_enabled: false
-      safebrowsing_enabled: false
     filters:
       - enabled: true
         url: https://adguardteam.github.io/HostlistsRegistry/assets/filter_1.txt
@@ -65,11 +59,15 @@ data:
         name: AdAway Default Blocklist
         id: 2
     user_rules: []
-    dns_rewrites:
-      - domain: '*.homelab.internal'
-        answer: 192.168.1.150
-      - domain: homelab.internal
-        answer: 192.168.1.150
+    filtering:
+      rewrites:
+        - domain: '*.homelab.internal'
+          answer: 192.168.1.150
+        - domain: homelab.internal
+          answer: 192.168.1.150
+      filtering_enabled: true
+      parental_enabled: false
+      safebrowsing_enabled: false
     dhcp:
       enabled: false
     clients:
