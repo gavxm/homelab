@@ -72,4 +72,11 @@ data:
         rdns: true
         dhcp: true
         hosts: true
+    statistics:
+      enabled: true
+      interval: 168h
+    os:
+      group: ""
+      user: ""
+      rlimit_nofile: 0
     schema_version: 29

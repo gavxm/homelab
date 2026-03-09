@@ -20,9 +20,6 @@ persistence:
   data:
     size: 1Gi
 
-dns:
-  nodePort: 30053
-
 resources:
   limits:
     memory: 256Mi
