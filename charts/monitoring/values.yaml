@@ -147,6 +147,12 @@ kube-prometheus-stack:
         repeat_interval: 12h
         routes:
           - matchers:
+              - alertname=~"Watchdog|InfoInhibitor"
+            receiver: 'null'
+          - matchers:
+              - alertname=~"KubeControllerManagerDown|KubeSchedulerDown"
+            receiver: 'null'
+          - matchers:
               - severity="critical"
             receiver: discord-notifications
             group_wait: 0s
@@ -195,10 +201,14 @@ kube-prometheus-stack:
         memory: 64Mi
         cpu: 10m
 
-  # ---------- Disable components not needed on single-node ----------
+  # ---------- Disable components not needed on K3s ----------
   kubeProxy:
     enabled: false
   kubeEtcd:
+    enabled: false
+  kubeControllerManager:
+    enabled: false
+  kubeScheduler:
     enabled: false
 
   # ---------- Custom Alert Rules (ported from Docker setup) ----------
@@ -338,3 +348,71 @@ kube-prometheus-stack:
               annotations:
                 summary: "Prometheus TSDB compactions are failing"
                 description: "Prometheus TSDB compactions have failed - this may lead to increased storage usage."
+
+    homelab-k8s-alerts:
+      groups:
+        - name: homelab_k8s_alerts
+          interval: 30s
+          rules:
+            - alert: PodCrashLooping
+              expr: increase(kube_pod_container_status_restarts_total[1h]) > 3
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping"
+                description: "Container {{ $labels.container }} has restarted {{ $value | humanize }} times in the last hour."
+
+            - alert: PodCrashLoopingCritical
+              expr: increase(kube_pod_container_status_restarts_total[1h]) > 10
+              for: 2m
+              labels:
+                severity: critical
+              annotations:
+                summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is crash looping rapidly"
+                description: "Container {{ $labels.container }} has restarted {{ $value | humanize }} times in the last hour."
+
+            - alert: PVCAlmostFull
+              expr: (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes) * 100 > 80
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "PVC {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is almost full"
+                description: "PVC is {{ $value | humanize }}% full."
+
+            - alert: PVCFull
+              expr: (kubelet_volume_stats_used_bytes / kubelet_volume_stats_capacity_bytes) * 100 > 95
+              for: 2m
+              labels:
+                severity: critical
+              annotations:
+                summary: "PVC {{ $labels.namespace }}/{{ $labels.persistentvolumeclaim }} is full"
+                description: "PVC is {{ $value | humanize }}% full — service may fail."
+
+            - alert: CertificateExpiringSoon
+              expr: certmanager_certificate_expiration_timestamp_seconds - time() < 7 * 24 * 3600
+              for: 1h
+              labels:
+                severity: warning
+              annotations:
+                summary: "Certificate {{ $labels.namespace }}/{{ $labels.name }} expires in less than 7 days"
+                description: "Certificate will expire in {{ $value | humanize }} seconds."
+
+            - alert: TraefikHighErrorRate
+              expr: sum(rate(traefik_service_requests_total{code=~"5.."}[5m])) / sum(rate(traefik_service_requests_total[5m])) * 100 > 5
+              for: 5m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Traefik is returning a high rate of 5xx errors"
+                description: "{{ $value | humanize }}% of requests are returning 5xx errors."
+
+            - alert: PodNotReady
+              expr: kube_pod_status_ready{condition="true"} == 0
+              for: 10m
+              labels:
+                severity: warning
+              annotations:
+                summary: "Pod {{ $labels.namespace }}/{{ $labels.pod }} is not ready"
+                description: "Pod has been in a not-ready state for more than 10 minutes."
