@@ -26,5 +26,7 @@ resources:
     cpu: 50m
 
 env:
+  DB_URL: "file:/appdata/db.sqlite"
+  DB_DRIVER: "better-sqlite3"
   AUTH_PROVIDERS: "credentials"
   AUTH_SESSION_EXPIRY_TIME: "30d"
