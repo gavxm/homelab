@@ -2,5 +2,31 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:recommended"
+  ],
+  "packageRules": [
+    {
+      "description": "Auto-merge patch updates for Helm charts",
+      "matchDatasources": ["helm"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "Auto-merge patch updates for Docker images",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["patch"],
+      "automerge": true
+    },
+    {
+      "description": "Group all Helm chart updates into one PR",
+      "matchDatasources": ["helm"],
+      "matchUpdateTypes": ["minor", "major"],
+      "groupName": "Helm chart updates"
+    },
+    {
+      "description": "Group all Docker image updates into one PR",
+      "matchDatasources": ["docker"],
+      "matchUpdateTypes": ["minor", "major"],
+      "groupName": "Docker image updates"
+    }
   ]
 }
