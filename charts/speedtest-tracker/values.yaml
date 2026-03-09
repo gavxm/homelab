@@ -1,0 +1,32 @@
+image:
+  repository: linuxserver/speedtest-tracker
+  tag: "1.0.2"
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  host: speedtest.homelab.internal
+
+persistence:
+  size: 1Gi
+
+env:
+  PUID: "1000"
+  PGID: "1000"
+  DB_CONNECTION: sqlite
+  SPEEDTEST_SCHEDULE: "0 */6 * * *"
+  APP_TIMEZONE: America/Chicago
+
+resources:
+  limits:
+    memory: 256Mi
+  requests:
+    memory: 128Mi
+    cpu: 50m

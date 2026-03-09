@@ -67,9 +67,14 @@ config:
         columns: 5
         header: true
         icon: mdi-server
-      Networking:
+      Tools:
         style: row
         columns: 2
+        header: true
+        icon: mdi-toolbox
+      Networking:
+        style: row
+        columns: 3
         header: true
         icon: mdi-network
 
@@ -150,6 +155,18 @@ config:
             href: https://code.homelab.internal/
             description: VS Code in the Browser
             siteMonitor: http://code-server.code-server.svc.cluster.local:8443/healthz
+
+    - Tools:
+        - IT Tools:
+            icon: mdi-tools
+            href: https://tools.homelab.internal/
+            description: Developer Utilities
+            siteMonitor: http://it-tools.it-tools.svc.cluster.local
+        - Speedtest Tracker:
+            icon: mdi-speedometer
+            href: https://speedtest.homelab.internal/
+            description: ISP Speed Tracking
+            siteMonitor: http://speedtest-tracker.speedtest-tracker.svc.cluster.local
 
     - Networking:
         - AdGuard Home:

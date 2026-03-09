@@ -35,3 +35,11 @@ apps:
     enabled: true
     namespace: adguard-home
     path: charts/adguard-home
+  itTools:
+    enabled: true
+    namespace: it-tools
+    path: charts/it-tools
+  speedtestTracker:
+    enabled: true
+    namespace: speedtest-tracker
+    path: charts/speedtest-tracker

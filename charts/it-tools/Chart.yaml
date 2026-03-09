@@ -1,0 +1,6 @@
+apiVersion: v2
+name: it-tools
+description: Collection of handy developer tools
+type: application
+version: 0.1.0
+appVersion: "2024.10.22-7ca5933"

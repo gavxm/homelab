@@ -1,0 +1,22 @@
+image:
+  repository: corentinth/it-tools
+  tag: "2024.10.22-7ca5933"
+  pullPolicy: IfNotPresent
+
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  host: tools.homelab.internal
+
+resources:
+  limits:
+    memory: 128Mi
+  requests:
+    memory: 64Mi
+    cpu: 10m
