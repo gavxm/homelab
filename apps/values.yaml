@@ -4,7 +4,7 @@ apps:
     namespace: argocd
     path: charts/argocd
   homepage:
-    enabled: true
+    enabled: false
     namespace: homepage
     path: charts/homepage
   uptime-kuma:
@@ -43,3 +43,7 @@ apps:
     enabled: true
     namespace: speedtest-tracker
     path: charts/speedtest-tracker
+  homarr:
+    enabled: true
+    namespace: homarr
+    path: charts/homarr
