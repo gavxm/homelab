@@ -30,6 +30,11 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            - name: APP_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: speedtest-tracker-secrets
+                  key: app-key
           volumeMounts:
             - name: data
               mountPath: /config
