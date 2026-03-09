@@ -60,11 +60,6 @@ data:
         id: 2
     user_rules: []
     filtering:
-      rewrites:
-        - domain: '*.homelab.internal'
-          answer: 192.168.1.150
-        - domain: homelab.internal
-          answer: 192.168.1.150
       filtering_enabled: true
       parental_enabled: false
       safebrowsing_enabled: false

@@ -50,6 +50,18 @@ spec:
               mountPath: /opt/adguardhome/conf
             - name: data
               mountPath: /opt/adguardhome/work
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - sh
+                  - -c
+                  - |
+                    sleep 5
+                    for entry in '{"domain":"*.homelab.internal","answer":"192.168.1.150"}' '{"domain":"homelab.internal","answer":"192.168.1.150"}'; do
+                      wget -q --post-data="$entry" --header="Content-Type: application/json" -O /dev/null \
+                        "http://admin:admin@127.0.0.1:3000/control/rewrite/add" 2>/dev/null || true
+                    done
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           livenessProbe:
