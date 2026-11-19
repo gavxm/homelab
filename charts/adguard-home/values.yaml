@@ -1,6 +1,6 @@
 image:
   repository: adguard/adguardhome
-  tag: v0.107.73
+  tag: v1.0.0
   pullPolicy: IfNotPresent
 
 nameOverride: ""
